@@ -170,7 +170,7 @@ void mnk(vector< vector<point> > data1,
     fout << toString(lm2.coef);
     fout.close();
 
-    // МНК на основе превых данных
+    // МНК на основе первых данных
 
     fout.open(mnkPath + "Prediction based on " + dataName1 +
                 "/prediction for " + dataName1 + ".txt");
@@ -307,5 +307,5 @@ int main() {
 
     cout << "Predicting with MNK... ";
     mnk(data1, real1, "61-90", data2, real2, "91-10");
-    cout << "Done.";
+    cout << "Done." << endl;
 }

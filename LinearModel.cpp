@@ -2,72 +2,6 @@
 
 #include "LinearModel.h"
 
-vector< vector<double> > LinearModel::transpose(vector< vector<double> > X) {
-
-    vector< vector<double> > Xt(X[0].size(), vector<double>(X.size()));
-
-    for (unsigned int i = 0; i < X[0].size(); i++) {
-        for (unsigned int j = 0; j < X.size(); j++) {
-            Xt[i][j] = X[j][i];
-        }
-    }
-
-    return Xt;
-}
-
-double LinearModel::scalarMult(vector<double> x, vector<double> y) {
-    if (x.size() != y.size()) {
-        cout << endl << "Ошибка размерности векторов" <<endl;
-        exit(1);
-    }
-
-    double res = 0;
-
-    for (unsigned int i = 0; i < x.size(); i++) {
-        res += (x[i] * y[i]);
-    }
-
-    return res;
-}
-
-vector< vector<double> > LinearModel::mult(vector< vector<double> > A,
-        vector< vector<double> > B) {
-
-    if (A[0].size() != B.size()) {
-        cout << endl << "Ошибка размеров матриц" <<endl;
-        exit(1);
-    }
-
-    B = transpose(B);
-
-    vector< vector<double> > AB(A.size(), vector<double>(B.size()));
-
-    for (unsigned int i = 0; i < A.size(); i++) {
-        for (unsigned int j = 0; j < B.size(); j++) {
-            AB[i][j] = scalarMult(A[i], B[j]);
-        }
-    }
-
-    return AB;
-}
-
-vector<double> LinearModel::mult(vector< vector<double> > A,
-                                 vector<double> b) {
-
-    if (A[0].size() != b.size()) {
-        cout << endl << "Ошибка размеров матриц" <<endl;
-        exit(1);
-    }
-
-    vector<double> Ab(A.size());
-
-    for (unsigned int i = 0; i < A.size(); i++) {
-        Ab[i] = scalarMult(A[i], b);
-    }
-
-    return Ab;
-}
-
 int LinearModel::gauss (vector < vector<double> > a, vector<double> & ans) {
     double EPS = 0.000001;
 
@@ -128,30 +62,45 @@ int LinearModel::gauss (vector < vector<double> > a, vector<double> & ans) {
     return 1;
 }
 
-void LinearModel::fit(vector< vector<point> > Xp,
-                      vector<point> yp) {
+void LinearModel::fit(vector< vector<point> > X,
+                      vector<point> y) {
 
-    vector< vector<double> > X(Xp.size(), vector<double>(Xp[0].size()));
-    vector<double> y(yp.size());
+    int n = X[0].size() - 1; // Количество прогнозов - 1
+    int m = X.size(); // Количество точек в одном прогнозе
 
-    for (int i = 0; i < (int) Xp.size(); i++) {
-        for (int j = 0; j < (int) Xp[0].size(); j++) {
-            X[i][j] = Xp[i][j].temp;
+    vector< vector<double> > a(n, vector<double>(n + 1));
+
+    for (int i = 0; i < n; i++) {
+        // Коэффициенты СЛУ
+        for (int j = 0; j < n; j++) {
+            double value = 0;
+
+            for (int k = 0; k < m; k++) {
+                value += (X[k][n].temp - X[k][i].temp) *
+                            (X[k][n].temp - X[k][j].temp);
+            }
+
+            a[i][j] = value;
         }
-        y[i] = yp[i].temp;
 
-        // Добавляем свободный член регрессии
-        X[i].push_back(1);
+        // Сводбодные члены СЛУ
+        double value = 0;
+
+        for (int k = 0; k < m; k++) {
+            value += (X[k][n].temp - X[k][i].temp)*(X[k][n].temp - y[k].temp);
+        }
+
+        a[i][n] = value;
+
     }
 
-    y = mult(transpose(X), y);
-    X = mult(transpose(X), X);
+    gauss(a, coef);
 
-    for (int i = 0; i < (int) X.size(); i++) {
-        X[i].push_back(y[i]);
-    }
+    double lastCoef = 1;
 
-    gauss(X, coef);
+    for (const auto& c : coef) lastCoef -= c;
+
+    coef.push_back(lastCoef);
 }
 
 vector<point> LinearModel::predict(vector< vector<point> > input) {
@@ -163,7 +112,7 @@ vector<point> LinearModel::predict(vector< vector<point> > input) {
         res[i] = input[i][0];
 
         // Сразу добавляем константу
-        res[i].temp = coef[input[0].size()];
+        // res[i].temp = coef[input[0].size()];
 
         for (int j = 0; j < (int) input[0].size(); j++) {
             res[i].temp += input[i][j].temp * coef[j];

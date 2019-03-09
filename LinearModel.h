@@ -20,12 +20,6 @@ struct point {
 class LinearModel {
         private:
             int gauss (vector < vector<double> > a, vector<double> & ans);
-            double scalarMult(vector<double> a, vector<double> b);
-            vector< vector<double> > transpose(vector< vector<double> > A);
-            vector< vector<double> > mult(vector< vector<double> > A,
-                                                                  vector< vector<double> > B);
-            vector<double> mult(vector< vector<double> > A,
-                                                                  vector<double> b);
 
         public:
             vector<double> coef;
