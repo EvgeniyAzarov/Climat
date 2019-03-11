@@ -67,6 +67,9 @@ int main() {
         }
 
         fout.close();
+
+        fin.clear();
+        fin.seekg(0);
     }
     fin.close();
 }

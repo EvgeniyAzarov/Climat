@@ -7,8 +7,8 @@
 
 #include "LinearModel.h"
 
-const string path_data1 = "Data/10RCM 61-90/";
-const string path_data2 = "Data/10RCM 91-10/";
+const string pathData1 = "Data/10RCM 61-90/";
+const string pathData2 = "Data/10RCM 91-10/";
 
 vector<point> loadPointsFromFile(string filename) {
     vector<point> points;
@@ -261,7 +261,111 @@ void intervals(vector< vector<point> > data, string dataName) {
     fout.close();
 }
 
-//TODO добавить МНК по месяцам
+void mnkMonths(vector< vector<point> > data1,
+         vector<point> real1,
+         string dataName1,
+         vector< vector<point> > data2,
+         vector<point> real2,
+         string dataName2) {
+
+    string mnkMonthsPath = "Result files/MNK months/";
+    ofstream fout;
+
+    vector<LinearModel> lm1(12);
+    vector<LinearModel> lm2(12);
+
+    vector<point> pred11;
+    vector<point> pred12;
+
+    vector<point> pred22;
+    vector<point> pred21;
+
+    int m1 = data1.size() / 12;
+    int m2 = data2.size() / 12;
+
+    for (int i = 0; i < 12; i++) {
+        vector< vector<point> > data1_i(data1.begin() + i * m1,
+                                        data1.begin() + (i + 1) * m1);
+        vector<point> real1_i(real1.begin() + i * m1,
+                                real1.begin() + (i + 1) * m1);
+
+        vector< vector<point> > data2_i(data1.begin() + i * m2,
+                                        data1.begin() + (i + 1) * m2);
+        vector<point> real2_i(real1.begin() + i * m2,
+                                real1.begin() + (i + 1) * m2);
+
+
+        lm1[i].fit(data1_i, real1_i);
+        lm2[i].fit(data2_i, real2_i);
+
+        vector<point> pred11_i = lm1[i].predict(data1_i);
+        vector<point> pred12_i = lm1[i].predict(data2_i);
+
+        vector<point> pred22_i = lm2[i].predict(data2_i);
+        vector<point> pred21_i = lm2[i].predict(data1_i);
+
+        pred11.insert(pred11.end(), pred11_i.begin(), pred11_i.end());
+        pred12.insert(pred12.end(), pred12_i.begin(), pred12_i.end());
+        pred22.insert(pred22.end(), pred22_i.begin(), pred22_i.end());
+        pred21.insert(pred21.end(), pred21_i.begin(), pred21_i.end());
+    }
+
+    fout.open(mnkMonthsPath + "Prediction based on " + dataName1 + "/coef.txt");
+    for (int i = 0; i < 12; i++) fout << toString(lm1[i].coef) << endl;
+    fout.close();
+
+    fout.open(mnkMonthsPath + "Prediction based on " + dataName2 + "/coef.txt");
+    for (int i = 0; i < 12; i++) fout << toString(lm2[i].coef) << endl;
+    fout.close();
+
+    // МНК на основе первых данных
+
+    fout.open(mnkMonthsPath + "Prediction based on " + dataName1 +
+                "/prediction for " + dataName1 + ".txt");
+    fout << toString(pred11);
+    fout.close();
+
+    fout.open(mnkMonthsPath + "Prediction based on " + dataName1 +
+                "/deviation of prediction for " + dataName1 + ".txt");
+    fout << deviation(pred11, real1);
+    fout.close();
+
+
+    fout.open(mnkMonthsPath + "Prediction based on " + dataName1 +
+                "/prediction for " + dataName2 + ".txt");
+    fout << toString(pred12);
+    fout.close();
+
+    fout.open(mnkMonthsPath + "Prediction based on " + dataName1 +
+                "/deviation of prediction for " + dataName2 + ".txt");
+    fout << deviation(pred12, real2);
+    fout.close();
+
+    // МНК на основе вторых данных
+
+    fout.open(mnkMonthsPath + "Prediction based on " + dataName2 +
+                "/prediction for " + dataName2 + ".txt");
+    fout << toString(pred22);
+    fout.close();
+
+    fout.open(mnkMonthsPath + "Prediction based on " + dataName2 +
+                "/deviation of prediction for " + dataName2 + ".txt");
+    fout << deviation(pred22, real2);
+    fout.close();
+
+
+    fout.open(mnkMonthsPath + "Prediction based on " + dataName2 +
+                "/prediction for " + dataName1 + ".txt");
+    fout << toString(pred21);
+    fout.close();
+
+    fout.open(mnkMonthsPath + "Prediction based on " + dataName2 +
+                "/deviation of prediction for " + dataName1 + ".txt");
+    fout << deviation(pred21, real1);
+    fout.close();
+
+}
+
 
 //TODO добавить МНК по секторам
 
@@ -279,10 +383,10 @@ int main() {
 
     for (int i = 0; i < n; i++) {
         data1[i] =
-            loadPointsFromFile(path_data1 + to_string(i) + ".txt");
+            loadPointsFromFile(pathData1 + to_string(i) + ".txt");
 
         data2[i] =
-            loadPointsFromFile(path_data2 + to_string(i) + ".txt");
+            loadPointsFromFile(pathData2 + to_string(i) + ".txt");
     }
 
     vector<point> real1 = data1[0];
@@ -308,4 +412,8 @@ int main() {
     cout << "Predicting with MNK... ";
     mnk(data1, real1, "61-90", data2, real2, "91-10");
     cout << "Done." << endl;
+
+    cout << "Predicting with MNK for months... ";
+    mnkMonths(data1, real1, "61-90", data2, real2, "91-10");
+    cout << "Done";
 }

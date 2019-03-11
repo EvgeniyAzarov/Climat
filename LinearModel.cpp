@@ -110,9 +110,7 @@ vector<point> LinearModel::predict(vector< vector<point> > input) {
     for (int i = 0; i < (int) input.size(); i++) {
 
         res[i] = input[i][0];
-
-        // Сразу добавляем константу
-        // res[i].temp = coef[input[0].size()];
+        res[i].temp = 0;
 
         for (int j = 0; j < (int) input[0].size(); j++) {
             res[i].temp += input[i][j].temp * coef[j];
