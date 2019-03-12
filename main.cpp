@@ -289,10 +289,10 @@ void mnkMonths(vector< vector<point> > data1,
         vector<point> real1_i(real1.begin() + i * m1,
                                 real1.begin() + (i + 1) * m1);
 
-        vector< vector<point> > data2_i(data1.begin() + i * m2,
-                                        data1.begin() + (i + 1) * m2);
-        vector<point> real2_i(real1.begin() + i * m2,
-                                real1.begin() + (i + 1) * m2);
+        vector< vector<point> > data2_i(data2.begin() + i * m2,
+                                        data2.begin() + (i + 1) * m2);
+        vector<point> real2_i(real2.begin() + i * m2,
+                                real2.begin() + (i + 1) * m2);
 
 
         lm1[i].fit(data1_i, real1_i);
