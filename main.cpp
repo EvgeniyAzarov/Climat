@@ -366,6 +366,48 @@ void mnkMonths(vector< vector<point> > data1,
 
 }
 
+void deltaMnk(vector< vector<point> > data1,
+         vector<point> real1,
+         vector< vector<point> > data2,
+         vector<point> real2) {
+
+    string deltaMnkPath = "Result files/Delta MNK/";
+    ofstream fout;
+
+    vector< vector<point> > delta(data2);
+    vector<point> deltaReal = real2;
+
+    for (int i = 0; i < delta.size(); i++) {
+        for (int j = 0; j < delta[0].size(); j++) {
+            delta[i][j].temp -= data1[i][j].temp;
+        }
+
+        deltaReal[i].temp -= real1[i].temp;
+    }
+
+    LinearModel lm;
+
+    lm.fit(delta, deltaReal);
+
+    vector<point> pred = lm.predict(delta);
+
+    for (int i = 0; i < pred.size(); i++) {
+        pred[i].temp += real1[i].temp;
+    }
+
+    fout.open(deltaMnkPath + "coef.txt");
+    fout << toString(lm.coef) << endl;
+    fout.close();
+
+    fout.open(deltaMnkPath + "deviation.txt");
+    fout << deviation(pred, real2);
+    fout.close();
+
+
+    fout.open(deltaMnkPath + "prediction.txt");
+    fout << toString(pred);
+    fout.close();
+}
 
 //TODO добавить МНК по секторам
 
@@ -415,5 +457,9 @@ int main() {
 
     cout << "Predicting with MNK for months... ";
     mnkMonths(data1, real1, "61-90", data2, real2, "91-10");
-    cout << "Done";
+    cout << "Done" << endl;
+
+    cout << "Predicting with delta MNK... ";
+    deltaMnk(data1, real1, data2, real2);
+    cout << "Done." << endl;
 }
