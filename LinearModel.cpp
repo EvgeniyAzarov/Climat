@@ -2,6 +2,19 @@
 
 #include "LinearModel.h"
 
+void printMatrix(vector< vector<double> > X) {
+    cout << endl;
+
+    for (unsigned int i = 0; i < X.size(); i++) {
+        for (unsigned int j = 0; j < X[0].size(); j++) {
+            cout << X[i][j] << "  ";
+        }
+        cout << endl;
+    }
+
+    cout << endl;
+}
+
 int LinearModel::gauss (vector < vector<double> > a, vector<double> & ans) {
     double EPS = 0.000001;
 
@@ -62,6 +75,7 @@ int LinearModel::gauss (vector < vector<double> > a, vector<double> & ans) {
     return 1;
 }
 
+// ToDo переименовать переменные, в соответствии с нормальными обозначениями
 void LinearModel::fit(vector< vector<point> > X,
                       vector<point> y) {
 
@@ -103,6 +117,48 @@ void LinearModel::fit(vector< vector<point> > X,
     coef.push_back(lastCoef);
 }
 
+void LinearModel::fitWithFreeCoefficient(vector< vector<point> > X,
+                      vector<point> y) {
+
+    // Добавляем слободный коэффициент
+    point tmp = {0, 0, 0, 1};
+    for (int i = 0; i < (int) X.size(); i++) {
+        X[i].push_back(tmp);
+    }
+
+    int k = X[0].size(); // Количество прогнозов
+    int n = X.size(); // Количество точек в одном прогнозе
+
+    vector< vector<double> > a(k, vector<double>(k + 1));
+
+    for (int i = 0; i < k; i++) {
+
+        // Коэффициенты СЛУ
+        for (int j = 0; j < k; j++) {
+            double value = 0;
+
+            for (int t = 0; t < n; t++) {
+                value += X[t][i].temp * X[t][j].temp;
+            }
+
+            a[i][j] = value;
+        }
+
+        // Сводбодные члены СЛУ
+        double value = 0;
+
+        for (int t = 0; t < n; t++) {
+            value += X[t][i].temp * y[t].temp;
+        }
+
+        a[i][k] = value;
+    }
+
+//    printMatrix(a);
+
+    gauss(a, coef);
+}
+
 vector<point> LinearModel::predict(vector< vector<point> > input) {
 
     vector<point> res(input.size());
@@ -114,6 +170,11 @@ vector<point> LinearModel::predict(vector< vector<point> > input) {
 
         for (int j = 0; j < (int) input[0].size(); j++) {
             res[i].temp += input[i][j].temp * coef[j];
+        }
+
+        // Свободный коэффициент
+        if (coef.size() > input[0].size()) {
+            res[i].temp += coef[input[0].size()];
         }
     }
 

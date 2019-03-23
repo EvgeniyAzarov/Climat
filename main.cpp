@@ -30,19 +30,6 @@ vector<point> loadPointsFromFile(string filename) {
     return points;
 }
 
-void printMatrix(vector< vector<point> > X) {
-    cout << endl;
-
-    for (unsigned int i = 0; i < X.size(); i++) {
-        for (unsigned int j = 0; j < X[0].size(); j++) {
-            cout << X[i][j].temp << "  ";
-        }
-        cout << endl;
-    }
-
-    cout << endl;
-}
-
 string toString(vector<double> a) {
     stringstream sout;
     for (auto it = a.begin(); it != a.end(); it++) {
@@ -218,6 +205,85 @@ void mnk(vector< vector<point> > data1,
 
 }
 
+void mnkWithFreeCoefficient(vector< vector<point> > data1,
+         vector<point> real1,
+         string dataName1,
+         vector< vector<point> > data2,
+         vector<point> real2,
+         string dataName2) {
+
+    string mnkWithFreeCoefPath = "Result files/MNK with free coef/";
+    ofstream fout;
+
+    LinearModel lm1;
+    LinearModel lm2;
+
+    lm1.fitWithFreeCoefficient(data1, real1);
+    lm2.fitWithFreeCoefficient(data2, real2);
+
+    vector<point> pred11 = lm1.predict(data1);
+    vector<point> pred12 = lm1.predict(data2);
+
+    vector<point> pred22 = lm2.predict(data2);
+    vector<point> pred21 = lm2.predict(data1);
+
+
+    fout.open(mnkWithFreeCoefPath + "Prediction based on " + dataName1 + "/coef.txt");
+    fout << toString(lm1.coef);
+    fout.close();
+
+    fout.open(mnkWithFreeCoefPath + "Prediction based on " + dataName2 + "/coef.txt");
+    fout << toString(lm2.coef);
+    fout.close();
+
+    // МНК на основе первых данных
+
+    fout.open(mnkWithFreeCoefPath + "Prediction based on " + dataName1 +
+                "/prediction for " + dataName1 + ".txt");
+    fout << toString(pred11);
+    fout.close();
+
+    fout.open(mnkWithFreeCoefPath + "Prediction based on " + dataName1 +
+                "/deviation of prediction for " + dataName1 + ".txt");
+    fout << deviation(pred11, real1);
+    fout.close();
+
+
+    fout.open(mnkWithFreeCoefPath + "Prediction based on " + dataName1 +
+                "/prediction for " + dataName2 + ".txt");
+    fout << toString(pred12);
+    fout.close();
+
+    fout.open(mnkWithFreeCoefPath + "Prediction based on " + dataName1 +
+                "/deviation of prediction for " + dataName2 + ".txt");
+    fout << deviation(pred12, real2);
+    fout.close();
+
+    // МНК на основе вторых данных
+
+    fout.open(mnkWithFreeCoefPath + "Prediction based on " + dataName2 +
+                "/prediction for " + dataName2 + ".txt");
+    fout << toString(pred22);
+    fout.close();
+
+    fout.open(mnkWithFreeCoefPath + "Prediction based on " + dataName2 +
+                "/deviation of prediction for " + dataName2 + ".txt");
+    fout << deviation(pred22, real2);
+    fout.close();
+
+
+    fout.open(mnkWithFreeCoefPath + "Prediction based on " + dataName2 +
+                "/prediction for " + dataName1 + ".txt");
+    fout << toString(pred21);
+    fout.close();
+
+    fout.open(mnkWithFreeCoefPath + "Prediction based on " + dataName2 +
+                "/deviation of prediction for " + dataName1 + ".txt");
+    fout << deviation(pred21, real1);
+    fout.close();
+
+}
+
 void intervals(vector< vector<point> > data, string dataName) {
     string intervalsPath = "Result files/Confidence intervals/";
     ofstream fout;
@@ -366,6 +432,111 @@ void mnkMonths(vector< vector<point> > data1,
 
 }
 
+void mnkMonthsWithFreeCoefficient(vector< vector<point> > data1,
+         vector<point> real1,
+         string dataName1,
+         vector< vector<point> > data2,
+         vector<point> real2,
+         string dataName2) {
+
+    string mnkMonthsWithFreeCoefPath = "Result files/MNK months with free coef/";
+    ofstream fout;
+
+    vector<LinearModel> lm1(12);
+    vector<LinearModel> lm2(12);
+
+    vector<point> pred11;
+    vector<point> pred12;
+
+    vector<point> pred22;
+    vector<point> pred21;
+
+    int m1 = data1.size() / 12;
+    int m2 = data2.size() / 12;
+
+    for (int i = 0; i < 12; i++) {
+        vector< vector<point> > data1_i(data1.begin() + i * m1,
+                                        data1.begin() + (i + 1) * m1);
+        vector<point> real1_i(real1.begin() + i * m1,
+                                real1.begin() + (i + 1) * m1);
+
+        vector< vector<point> > data2_i(data2.begin() + i * m2,
+                                        data2.begin() + (i + 1) * m2);
+        vector<point> real2_i(real2.begin() + i * m2,
+                                real2.begin() + (i + 1) * m2);
+
+
+        lm1[i].fitWithFreeCoefficient(data1_i, real1_i);
+        lm2[i].fitWithFreeCoefficient(data2_i, real2_i);
+
+        vector<point> pred11_i = lm1[i].predict(data1_i);
+        vector<point> pred12_i = lm1[i].predict(data2_i);
+
+        vector<point> pred22_i = lm2[i].predict(data2_i);
+        vector<point> pred21_i = lm2[i].predict(data1_i);
+
+        pred11.insert(pred11.end(), pred11_i.begin(), pred11_i.end());
+        pred12.insert(pred12.end(), pred12_i.begin(), pred12_i.end());
+        pred22.insert(pred22.end(), pred22_i.begin(), pred22_i.end());
+        pred21.insert(pred21.end(), pred21_i.begin(), pred21_i.end());
+    }
+
+    fout.open(mnkMonthsWithFreeCoefPath + "Prediction based on " + dataName1 + "/coef.txt");
+    for (int i = 0; i < 12; i++) fout << toString(lm1[i].coef) << endl;
+    fout.close();
+
+    fout.open(mnkMonthsWithFreeCoefPath + "Prediction based on " + dataName2 + "/coef.txt");
+    for (int i = 0; i < 12; i++) fout << toString(lm2[i].coef) << endl;
+    fout.close();
+
+    // МНК на основе первых данных
+
+    fout.open(mnkMonthsWithFreeCoefPath + "Prediction based on " + dataName1 +
+                "/prediction for " + dataName1 + ".txt");
+    fout << toString(pred11);
+    fout.close();
+
+    fout.open(mnkMonthsWithFreeCoefPath + "Prediction based on " + dataName1 +
+                "/deviation of prediction for " + dataName1 + ".txt");
+    fout << deviation(pred11, real1);
+    fout.close();
+
+
+    fout.open(mnkMonthsWithFreeCoefPath + "Prediction based on " + dataName1 +
+                "/prediction for " + dataName2 + ".txt");
+    fout << toString(pred12);
+    fout.close();
+
+    fout.open(mnkMonthsWithFreeCoefPath + "Prediction based on " + dataName1 +
+                "/deviation of prediction for " + dataName2 + ".txt");
+    fout << deviation(pred12, real2);
+    fout.close();
+
+    // МНК на основе вторых данных
+
+    fout.open(mnkMonthsWithFreeCoefPath + "Prediction based on " + dataName2 +
+                "/prediction for " + dataName2 + ".txt");
+    fout << toString(pred22);
+    fout.close();
+
+    fout.open(mnkMonthsWithFreeCoefPath + "Prediction based on " + dataName2 +
+                "/deviation of prediction for " + dataName2 + ".txt");
+    fout << deviation(pred22, real2);
+    fout.close();
+
+
+    fout.open(mnkMonthsWithFreeCoefPath + "Prediction based on " + dataName2 +
+                "/prediction for " + dataName1 + ".txt");
+    fout << toString(pred21);
+    fout.close();
+
+    fout.open(mnkMonthsWithFreeCoefPath + "Prediction based on " + dataName2 +
+                "/deviation of prediction for " + dataName1 + ".txt");
+    fout << deviation(pred21, real1);
+    fout.close();
+
+}
+
 void deltaMnk(vector< vector<point> > data1,
          vector<point> real1,
          vector< vector<point> > data2,
@@ -375,7 +546,7 @@ void deltaMnk(vector< vector<point> > data1,
     ofstream fout;
 
     vector< vector<point> > delta(data2);
-    vector<point> deltaReal = real2;
+    vector<point> deltaReal(real2);
 
     for (int i = 0; i < delta.size(); i++) {
         for (int j = 0; j < delta[0].size(); j++) {
@@ -408,8 +579,6 @@ void deltaMnk(vector< vector<point> > data1,
     fout << toString(pred);
     fout.close();
 }
-
-//TODO добавить МНК по секторам
 
 int main() {
     // Количество прогнозов
@@ -455,8 +624,16 @@ int main() {
     mnk(data1, real1, "61-90", data2, real2, "91-10");
     cout << "Done." << endl;
 
+    cout << "Predicting with MNK with free coefficient... ";
+    mnkWithFreeCoefficient(data1, real1, "61-90", data2, real2, "91-10");
+    cout << "Done." << endl;
+
     cout << "Predicting with MNK for months... ";
     mnkMonths(data1, real1, "61-90", data2, real2, "91-10");
+    cout << "Done" << endl;
+
+    cout << "Predicting with MNK for months with free coefficient... ";
+    mnkMonthsWithFreeCoefficient(data1, real1, "61-90", data2, real2, "91-10");
     cout << "Done" << endl;
 
     cout << "Predicting with delta MNK... ";
