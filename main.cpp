@@ -64,6 +64,8 @@ vector< vector<point> > transpose(vector< vector<point> > a) {
 }
 
 string deviation(vector<point> a, vector<point> b) {
+    if (a.size() != b.size()) cout << "Size error";
+
     int n = a.size();
 
     double l1 = 0;
@@ -580,6 +582,39 @@ void deltaMnk(vector< vector<point> > data1,
     fout.close();
 }
 
+void deltaMean(vector< vector<point> > data1,
+         vector<point> real1,
+         vector< vector<point> > data2,
+         vector<point> real2) {
+
+    string deltaMeanPath = "Result files/Delta mean/";
+    ofstream fout;
+
+    vector<point> pred(real2);
+
+    for (int i = 0; i < data1.size(); i++) {
+
+        double sum = 0;
+        int num = 0;
+
+        for (int j = 0; j < data1[0].size(); j++) {
+            sum += data2[i][j].temp - data1[i][j].temp;
+            num++;
+        }
+
+        // !!! Неявное обнуление
+        pred[i].temp = real1[i].temp + (sum / num);
+    }
+
+    fout.open(deltaMeanPath + "deviation.txt");
+    fout << deviation(pred, real2);
+    fout.close();
+
+    fout.open(deltaMeanPath + "prediction.txt");
+    fout << toString(pred);
+    fout.close();
+}
+
 int main() {
     // Количество прогнозов
     int n;
@@ -607,6 +642,8 @@ int main() {
     vector<point> real2 = data2[0];
     data2.erase(data2.begin());
     data2 = transpose(data2);
+
+    //Первая координата -- номер  точки, вторая -- номер прогноза
 
     cout << "Done." << endl << endl;
 
@@ -638,5 +675,9 @@ int main() {
 
     cout << "Predicting with delta MNK... ";
     deltaMnk(data1, real1, data2, real2);
+    cout << "Done." << endl;
+
+    cout << "Predicting with delta mean... ";
+    deltaMean(data1, real1, data2, real2);
     cout << "Done." << endl;
 }
