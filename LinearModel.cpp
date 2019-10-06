@@ -97,7 +97,7 @@ void LinearModel::fit(vector< vector<point> > X,
             a[i][j] = value;
         }
 
-        // Сводбодные члены СЛУ
+        // Свободные члены СЛУ
         double value = 0;
 
         for (int k = 0; k < m; k++) {
@@ -120,7 +120,7 @@ void LinearModel::fit(vector< vector<point> > X,
 void LinearModel::fitWithFreeCoefficient(vector< vector<point> > X,
                       vector<point> y) {
 
-    // Добавляем слободный коэффициент
+    // Добавляем свободный коэффициент
     point tmp = {0, 0, 0, 1};
     for (int i = 0; i < (int) X.size(); i++) {
         X[i].push_back(tmp);

@@ -1,8 +1,3 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <cmath>
 #include <map>
 
 #include "LinearModel.h"
@@ -11,6 +6,7 @@ const string pathData1 = "Data/10RCM 61-90/";
 const string pathData2 = "Data/10RCM 91-10/";
 
 vector<point> loadPointsFromFile(string filename) {
+
     vector<point> points;
 
     ifstream fin(filename);
@@ -18,8 +14,8 @@ vector<point> loadPointsFromFile(string filename) {
     point p;
 
     while (fin >> p.t >> p.x >> p.y >> p.temp) {
-//        cout << filename << ":   " <<
-//            p.t << " " << p.x << " " << p.y << " " << p.temp << endl;
+        // cout << filename << ":   " <<
+        //     p.t << " " << p.x << " " << p.y << " " << p.temp << endl;
         points.push_back(p);
     }
 
@@ -100,9 +96,7 @@ string deviation(vector<point> a, vector<point> b) {
     return out.str();
 }
 
-void arithmeticMean(vector< vector<point> > data,
-         vector<point> real,
-         string dataName) {
+void arithmeticMean(vector< vector<point> > data, vector<point> real, string dataName) {
     ofstream fout;
     string avgPath = "Result files/Arithmetic mean/";
 
@@ -128,12 +122,12 @@ void arithmeticMean(vector< vector<point> > data,
     fout.close();
 }
 
-void mnk(vector< vector<point> > data1,
-         vector<point> real1,
-         string dataName1,
-         vector< vector<point> > data2,
-         vector<point> real2,
-         string dataName2) {
+void mnk(vector< vector<point> > data1, 
+	vector<point> real1, 
+	string dataName1, 
+	vector< vector<point> > data2, 
+	vector<point> real2, 
+	string dataName2) {
 
     string mnkPath = "Result files/MNK/";
     ofstream fout;
@@ -204,7 +198,6 @@ void mnk(vector< vector<point> > data1,
                 "/deviation of prediction for " + dataName1 + ".txt");
     fout << deviation(pred21, real1);
     fout.close();
-
 }
 
 void mnkWithFreeCoefficient(vector< vector<point> > data1,
@@ -582,6 +575,49 @@ void deltaMnk(vector< vector<point> > data1,
     fout.close();
 }
 
+void deltaMnkWithFreeCoefficient(vector< vector<point> > data1,
+         vector<point> real1,
+         vector< vector<point> > data2,
+         vector<point> real2) {
+
+    string deltaMnkPath = "Result files/Delta MNK with free coef/";
+    ofstream fout;
+
+    vector< vector<point> > delta(data2);
+    vector<point> deltaReal(real2);
+
+    for (int i = 0; i < delta.size(); i++) {
+        for (int j = 0; j < delta[0].size(); j++) {
+            delta[i][j].temp -= data1[i][j].temp;
+        }
+
+        deltaReal[i].temp -= real1[i].temp;
+    }
+
+    LinearModel lm;
+
+    lm.fitWithFreeCoefficient(delta, deltaReal);
+
+    vector<point> pred = lm.predict(delta);
+
+    for (int i = 0; i < pred.size(); i++) {
+        pred[i].temp += real1[i].temp;
+    }
+
+    fout.open(deltaMnkPath + "coef.txt");
+    fout << toString(lm.coef) << endl;
+    fout.close();
+
+    fout.open(deltaMnkPath + "deviation.txt");
+    fout << deviation(pred, real2);
+    fout.close();
+
+
+    fout.open(deltaMnkPath + "prediction.txt");
+    fout << toString(pred);
+    fout.close();
+}
+
 void deltaMean(vector< vector<point> > data1,
          vector<point> real1,
          vector< vector<point> > data2,
@@ -675,6 +711,10 @@ int main() {
 
     cout << "Predicting with delta MNK... ";
     deltaMnk(data1, real1, data2, real2);
+    cout << "Done." << endl;
+
+    cout << "Predicting with delta MNK with free coef... ";
+    deltaMnkWithFreeCoefficient(data1, real1, data2, real2);
     cout << "Done." << endl;
 
     cout << "Predicting with delta mean... ";
