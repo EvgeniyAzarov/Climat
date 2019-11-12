@@ -1,4 +1,5 @@
 #include <map>
+#include <iomanip>
 
 #include "LinearModel.h"
 
@@ -28,6 +29,7 @@ vector<point> loadPointsFromFile(string filename) {
 
 string toString(vector<double> a) {
     stringstream sout;
+    sout << fixed << setprecision(2);
     for (auto it = a.begin(); it != a.end(); it++) {
         sout << *it << " ";
     }
@@ -39,6 +41,7 @@ string toString(vector<double> a) {
 
 string toString(vector<point> a) {
     stringstream sout;
+    sout << fixed << setprecision(2);
     for (auto it = a.begin(); it != a.end(); it++) {
         sout << (*it).t << " " << (*it).x << " "
                 << (*it).y << " " << (*it).temp << endl;
@@ -84,6 +87,8 @@ string deviation(vector<point> a, vector<point> b) {
     l2 = sqrt(l2 / n);
 
     stringstream out;
+
+    out << fixed << setprecision(2);
 
     out << "l1: " << l1 << endl << "l2: " << l2 << endl;
 
@@ -506,9 +511,10 @@ void deltaMean(vector< vector<point> > data1,
 
 int main() {
     // Количество прогнозов
-    int n;
-    cout << "Number of predictions: ";
-    cin >> n;
+    // int n;
+    // cout << "Number of predictions: ";
+    // cin >> n;
+    n = 10;
     n++;
 
     vector< vector<point> > data1(n);
