@@ -1,0 +1,15 @@
+l1: 0.18
+l2: 0.26
+
+Month1  l1: 0.19 	 l2: 0.28
+Month2  l1: 0.17 	 l2: 0.25
+Month3  l1: 0.20 	 l2: 0.27
+Month4  l1: 0.23 	 l2: 0.31
+Month5  l1: 0.20 	 l2: 0.26
+Month6  l1: 0.18 	 l2: 0.23
+Month7  l1: 0.18 	 l2: 0.26
+Month8  l1: 0.17 	 l2: 0.26
+Month9  l1: 0.13 	 l2: 0.20
+Month10  l1: 0.14 	 l2: 0.22
+Month11  l1: 0.18 	 l2: 0.27
+Month12  l1: 0.22 	 l2: 0.30
