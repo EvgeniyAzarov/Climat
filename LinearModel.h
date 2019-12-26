@@ -24,9 +24,7 @@ class LinearModel {
         public:
             vector<double> coef;
 
-            void fit(vector< vector<point> > X, vector<point> y);
-            void fitWithFreeCoefficient(vector< vector<point> > X,
-                                         vector<point> y);
+            void fit(vector< vector<point> > X, vector<point> y, bool freeCoef = true);
             vector<point> predict(vector< vector<point> > input);
 };
 

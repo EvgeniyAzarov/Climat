@@ -16,7 +16,7 @@ void printMatrix(vector< vector<double> > X) {
 }
 
 int LinearModel::gauss (vector < vector<double> > a, vector<double> & ans) {
-    // Код гаусса с maxalgo
+    // Код гаусса с maximal algo
     double EPS = 0.000001;
 
     int n = (int) a.size();
@@ -78,86 +78,84 @@ int LinearModel::gauss (vector < vector<double> > a, vector<double> & ans) {
 
 // ToDo переименовать переменные, в соответствии с нормальными обозначениями
 void LinearModel::fit(vector< vector<point> > X,
-                      vector<point> y) {
+                      vector<point> y, bool freeCoef) {
 
-    int n = X[0].size() - 1; // Количество прогнозов - 1
-    int m = X.size(); // Количество точек в одном прогнозе
+    if (!freeCoef) {
+        int n = X[0].size() - 1; // Количество прогнозов - 1
+        int m = X.size(); // Количество точек в одном прогнозе
 
-    vector< vector<double> > a(n, vector<double>(n + 1));
+        vector< vector<double> > a(n, vector<double>(n + 1));
 
-    for (int i = 0; i < n; i++) {
-        // Коэффициенты СЛУ
-        for (int j = 0; j < n; j++) {
+        for (int i = 0; i < n; i++) {
+            // Коэффициенты СЛУ
+            for (int j = 0; j < n; j++) {
+                double value = 0;
+
+                for (int k = 0; k < m; k++) {
+                    value += (X[k][n].temp - X[k][i].temp) *
+                                (X[k][n].temp - X[k][j].temp);
+                }
+
+                a[i][j] = value;
+            }
+
+            // Свободные члены СЛУ
             double value = 0;
 
             for (int k = 0; k < m; k++) {
-                value += (X[k][n].temp - X[k][i].temp) *
-                            (X[k][n].temp - X[k][j].temp);
+                value += (X[k][n].temp - X[k][i].temp)*(X[k][n].temp - y[k].temp);
             }
 
-            a[i][j] = value;
+            a[i][n] = value;
+
         }
 
-        // Свободные члены СЛУ
-        double value = 0;
+        gauss(a, coef);
 
-        for (int k = 0; k < m; k++) {
-            value += (X[k][n].temp - X[k][i].temp)*(X[k][n].temp - y[k].temp);
+        double lastCoef = 1;
+
+        for (const auto& c : coef) lastCoef -= c;
+
+        coef.push_back(lastCoef);
+    } else {
+        // Добавляем свободный коэффициент
+        point tmp = {0, 0, 0, 1};
+        for (int i = 0; i < (int) X.size(); i++) {
+            X[i].push_back(tmp);
         }
 
-        a[i][n] = value;
+        int k = X[0].size(); // Количество прогнозов
+        int n = X.size(); // Количество точек в одном прогнозе
 
-    }
+        vector< vector<double> > a(k, vector<double>(k + 1));
 
-    gauss(a, coef);
+        for (int i = 0; i < k; i++) {
 
-    double lastCoef = 1;
+            // Коэффициенты СЛУ
+            for (int j = 0; j < k; j++) {
+                double value = 0;
 
-    for (const auto& c : coef) lastCoef -= c;
+                for (int t = 0; t < n; t++) {
+                    value += X[t][i].temp * X[t][j].temp;
+                }
 
-    coef.push_back(lastCoef);
-}
+                a[i][j] = value;
+            }
 
-void LinearModel::fitWithFreeCoefficient(vector< vector<point> > X,
-                      vector<point> y) {
-
-    // Добавляем свободный коэффициент
-    point tmp = {0, 0, 0, 1};
-    for (int i = 0; i < (int) X.size(); i++) {
-        X[i].push_back(tmp);
-    }
-
-    int k = X[0].size(); // Количество прогнозов
-    int n = X.size(); // Количество точек в одном прогнозе
-
-    vector< vector<double> > a(k, vector<double>(k + 1));
-
-    for (int i = 0; i < k; i++) {
-
-        // Коэффициенты СЛУ
-        for (int j = 0; j < k; j++) {
+            // Сводбодные члены СЛУ
             double value = 0;
 
             for (int t = 0; t < n; t++) {
-                value += X[t][i].temp * X[t][j].temp;
+                value += X[t][i].temp * y[t].temp;
             }
 
-            a[i][j] = value;
+            a[i][k] = value;
         }
 
-        // Сводбодные члены СЛУ
-        double value = 0;
+        //printMatrix(a);
 
-        for (int t = 0; t < n; t++) {
-            value += X[t][i].temp * y[t].temp;
-        }
-
-        a[i][k] = value;
+        gauss(a, coef);
     }
-
-//    printMatrix(a);
-
-    gauss(a, coef);
 }
 
 vector<point> LinearModel::predict(vector< vector<point> > input) {

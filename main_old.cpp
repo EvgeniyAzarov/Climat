@@ -288,11 +288,11 @@ void mnkMonths(vector< vector<point> > data1,
                                 real2.begin() + (i + 1) * m2);
 
         if (!freeCoefficient) {
-            lm2[i].fit(data2_i, real2_i);
-            lm1[i].fit(data1_i, real1_i);   
+            lm2[i].fit(data2_i, real2_i, false);
+            lm1[i].fit(data1_i, real1_i, false);   
         } else {
-            lm2[i].fitWithFreeCoefficient(data2_i, real2_i);
-            lm1[i].fitWithFreeCoefficient(data1_i, real1_i);
+            lm2[i].fit(data2_i, real2_i);
+            lm1[i].fit(data1_i, real1_i);
         }
 
         vector<point> pred11_i = lm1[i].predict(data1_i);
@@ -378,9 +378,9 @@ void deltaMnk(vector< vector<point> > data1,
     LinearModel lm;
 
     if(!freeCoefficient) {
-        lm.fit(delta, deltaReal);
+        lm.fit(delta, deltaReal, false);
     } else {
-        lm.fitWithFreeCoefficient(delta, deltaReal);
+        lm.fit(delta, deltaReal);
     }
 
     vector<point> pred = lm.predict(delta);
@@ -437,9 +437,9 @@ void deltaMnkMonths(vector< vector<point> > data1,
                                 deltaReal.begin() + (i + 1) * m);
 
         if (!freeCoefficient) {
-            lm[i].fit(delta_i, real_i);
+            lm[i].fit(delta_i, real_i, false);
         } else {
-            lm[i].fitWithFreeCoefficient(delta_i, real_i);
+            lm[i].fit(delta_i, real_i);
         }
 
         vector<point> pred_i = lm[i].predict(delta_i);

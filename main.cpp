@@ -108,7 +108,7 @@ void shift(int n, int decs, vector< vector< vector<point> > > data, vector< vect
     	// cout << "shift_real: " << toString(shift_real) << endl;
 
     	LinearModel lm;
-    	lm.fitWithFreeCoefficient(shift, shift_real);
+    	lm.fit(shift, shift_real);
 
     	vector<point> pred = lm.predict(shift_next);
     	for (int j = 0; j < pred.size(); j++) {
@@ -142,7 +142,7 @@ void mnk(int n, int decs, vector< vector< vector<point> > > data, vector< vector
 	for (int i = 0; i < decs; i++) {
 
 		LinearModel lm;
-		lm.fitWithFreeCoefficient(data[i], real[i]);
+		lm.fit(data[i], real[i]);
 		coefs.insert(pair<string, vector<double> >("MNK_" + to_string(i+1), lm.coef));
 
 		// Отклонения на всех остальных периодах L1
@@ -161,7 +161,7 @@ void mnk(int n, int decs, vector< vector< vector<point> > > data, vector< vector
 
 		// Без свободного коэффициента
 
-		lm.fit(data[i], real[i]);
+		lm.fit(data[i], real[i], false);
 		coefs.insert(pair<string, vector<double> >("SMNK_" + to_string(i+1), lm.coef));
 
 		// Отклонения на всех остальных периодах L1
@@ -188,6 +188,74 @@ void mnk(int n, int decs, vector< vector< vector<point> > > data, vector< vector
 	for (auto it = coefs.begin(); it != coefs.end(); ++it) {
 		cout << (*it).first << " : " << toString((*it).second);
 	}
+	cout << endl;
+}
+
+void mnkMonths(int n, int decs, vector< vector< vector<point> > > data, vector< vector<point> > real) {
+	stringstream tablel1;
+	stringstream tablel2;
+
+	tablel1 << setprecision(2) << endl;
+	tablel2 << setprecision(2) << endl; 
+
+	int m = 12; // Количество месяцев
+
+	for (int i = 0; i < decs; i++) {
+
+		int m  = data[i].size() / 12; // Количетсво точек (x,y) 
+
+		vector< vector<point> > data_mon(12);
+		vector<LinearModel> lm(12);
+		vector<LinearModel> lmWithoutFreeCoef(12);
+
+		for (int j = 0; j < 12; j++) {
+			vector< vector<point> > data_mon(data[i].begin() + j * m, data[i].begin() + (j + 1) * m);
+
+			vector<point> real_mon(real[i].begin() + j * m, real[i].begin() + (j + 1) * m);
+
+			lm[j].fit(data_mon, real_mon);
+			lmWithoutFreeCoef[j].fit(data_mon, real_mon, false);
+		}
+
+		// Отклонения на всех остальных периодах 
+		tablel1 << "L1: $MNK_{" << i+1 << "}M$ ";
+		tablel2 << "L2: $MNK_{" << i+1 << "}M$ ";
+		for (int j = 0; j < decs; j++) {
+			vector<point> pred;
+			for (int k = 0; k < 12; k++) {
+				vector< vector<point> > data_j_mon(data[j].begin() + k * m, data[j].begin() + (k + 1) * m);
+				vector<point> pred_k = lm[k].predict(data_j_mon);
+				pred.insert(pred.end(), pred_k.begin(), pred_k.end());
+			}
+			tablel1 << "& " << deviation(pred, real[j])[0] << " ";
+			tablel2 << "& " << deviation(pred, real[j])[1] << " ";
+		}
+		tablel1 << "\\\\" << endl << "\\hline" << endl;
+		tablel2 << "\\\\" << endl << "\\hline" << endl;
+
+		// Без свободного коэффициента
+
+		tablel1 << "L1: $SMNK_{" << i+1 << "}M$ ";
+		tablel2 << "L2: $SMNK_{" << i+1 << "}M$ ";
+		for (int j = 0; j < decs; j++) {
+			vector<point> pred;
+			for (int k = 0; k < 12; k++) {
+				vector< vector<point> > data_j_mon(data[j].begin() + k * m, data[j].begin() + (k + 1) * m);
+				vector<point> pred_k = lmWithoutFreeCoef[k].predict(data_j_mon);
+				pred.insert(pred.end(), pred_k.begin(), pred_k.end());
+			}
+			tablel1 << "& " << deviation(pred, real[j])[0] << " ";
+			tablel2 << "& " << deviation(pred, real[j])[1] << " ";
+		}
+		tablel1 << "\\\\" << endl << "\\hline" << endl;
+		tablel2 << "\\\\" << endl << "\\hline" << endl;
+
+	}
+
+	cout << "MNK M L1 table" << tablel1.str();
+	cout << endl;
+	cout << "MNK M L2 table" << tablel2.str();
+	cout << endl;
 }
 
 int main() {
@@ -245,8 +313,7 @@ int main() {
     	data[i]=transpose(data[i]);
     }
 
-    cout << data[0].size() << endl;
-    cout << real[0].size() << endl;
+    cout << "Number of points (t,x,y): " << data[0].size() << endl;
 
     int decs = years / 10;
 
@@ -310,18 +377,9 @@ int main() {
 
     cout << endl;
 
-
-    // cout << "Ради интереса: коэффицинты созданы на 1971 и применены к 1972" << endl;
-    // LinearModel l; 
-    // l.fitWithFreeCoefficient(data[0], real[0]);
-    // vector<point> p0 = l.predict(data[0]);
-    // vector<point> p1 = l.predict(data[1]);
-    // cout << toString(l.coef);
-    // cout << "1971: " << deviation(p0, real[0]) << endl;
-    // cout << "1972: " << deviation(p1, real[1]) << endl;
-    // cout << endl;
-
     // shift(n, decs, data_m, real_m);
 
     mnk(n, decs, data_m, real_m);
+
+    mnkMonths(n, decs, data_m, real_m);
 }
