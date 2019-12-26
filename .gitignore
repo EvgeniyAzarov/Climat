@@ -1,6 +1,2 @@
-Data/
-*.depend
-*.layout
-*.cbp
 *.o
-*.sublime-workspace
+Data/

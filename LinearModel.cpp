@@ -16,6 +16,7 @@ void printMatrix(vector< vector<double> > X) {
 }
 
 int LinearModel::gauss (vector < vector<double> > a, vector<double> & ans) {
+    // Код гаусса с maxalgo
     double EPS = 0.000001;
 
     int n = (int) a.size();
