@@ -66,8 +66,17 @@ vector<double> deviation(vector<point> a, vector<point> b) {
     return res;
 }
 
-void deviationMonths(vector<point> a, vector<point> b, string name1, string name2) {
-	cout << endl << "";
+vector< vector<double> > deviationMonths(vector<point> a, vector<point> b, string name1, string name2) {
+	vector< vector<double> > res(12, vector<double>(2));
+
+	int m = a.size() / 12;
+
+	for (int i = 0; i < 12; i++) {
+		res[i] = deviation(vector<point>(a.begin() + i * m, a.begin() + (i + 1) * m),
+								vector<point>(b.begin() + i * m, b.begin() + (i + 1) * m));
+	}
+
+	return res;
 }
 
 void printMatrix(vector< vector<point> > X) {
@@ -377,9 +386,9 @@ int main() {
 
     cout << endl;
 
-    // shift(n, decs, data_m, real_m);
-
     mnk(n, decs, data_m, real_m);
 
     mnkMonths(n, decs, data_m, real_m);
+
+	shift(n, decs, data_m, real_m);
 }
