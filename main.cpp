@@ -96,20 +96,18 @@ void shift(int n, int decs, vector< vector< vector<point> > > data, vector< vect
 
 	// Мнк по разницам, строим коэффицинты на двух пердыдущих десятилетиях,
     // поэтому начинаем с третьего десятилетия
-    for (int i = 2; i < decs; i++) {
-    	vector< vector<point> > shift_next = data[i];
-    	vector< vector<point> > shift = data[i-1];
-    	vector<point> shift_real = real[i-1];
+    for (int i = 1; i < decs; i++) {
+    	vector< vector<point> > shift = data[i];
+    	vector<point> shift_real = real[i];
 
     	// cout << "Shift size: " << shift.size() << endl;
     	// cout << "Shift0 size: " << shift[0].size() << endl;
 
     	for (int j = 0; j < shift.size(); j++) {
     		for (int k = 0; k < shift[0].size(); k++) {
-				shift_next[j][k].temp -= data[i-1][j][k].temp;
-				shift[j][k].temp -= data[i-2][j][k].temp;
+				shift[j][k].temp -= data[i-1][j][k].temp;
     		}
-    		shift_real[j].temp -= real[i-2][j].temp;
+    		shift_real[j].temp -= real[i-1][j].temp;
     	}
 
     	// cout << "shift: ";
@@ -119,24 +117,29 @@ void shift(int n, int decs, vector< vector< vector<point> > > data, vector< vect
     	LinearModel lm;
     	lm.fit(shift, shift_real);
 
-    	vector<point> pred = lm.predict(shift_next);
-    	for (int j = 0; j < pred.size(); j++) {
-    		pred[j].temp += real[i-1][j].temp;
-    	}
+		cout << "Shift MNK " << i << endl;
+		cout << "Coefficients: " << toString(lm.coef);
 
-    	cout << "Shift MNK " << i*10 + 1971 << "-" << i*10 + 1980 << endl;
-    	cout << "Deviation " << i*10 + 1971 << "-" << i*10 + 1980 << " " << deviation(pred, real[i])[0] << endl;
+		for (int k = i; k < decs; k++) { 
+			vector< vector<point> > shift_next = data[k];
 
-    	vector<point> predTest = lm.predict(shift);
-    	for (int j = 0; j < predTest.size(); j++) {
-    		predTest[j].temp += real[i-2][j].temp;
-    	}
-    	cout << "Deviation " << (i-1)*10 + 1971 << "-" << (i-1)*10 + 1980 << " " << deviation(predTest, real[i-1])[0] << endl;
-    	cout << "Coefficients: " << toString(lm.coef) << endl;
-    	cout << endl;
+			for (int l = 0; l < shift_next.size(); l++) {
+				for (int t = 0; t < shift_next[0].size(); t++) {
+					shift_next[l][t].temp -= data[k-1][l][t].temp;
+				}
+			}
+
+			vector<point> pred = lm.predict(shift_next);
+			for (int j = 0; j < pred.size(); j++) {
+				pred[j].temp += real[k-1][j].temp;
+			}
+
+			cout << "Deviation " << k*10 + 1971 << "-" << k*10 + 1980 << " " 
+				<< "l1: " << deviation(pred, real[k])[0]
+				<< "l2: " << deviation(pred, real[k])[1]<< endl << endl;
+
+		}
     }
-
-    // cout << "deviation 1973 and 1972 real " << deviation(real[1], real[2]) << endl;
 }
 
 void mnk(int n, int decs, vector< vector< vector<point> > > data, vector< vector<point> > real) {
@@ -197,7 +200,7 @@ void mnk(int n, int decs, vector< vector< vector<point> > > data, vector< vector
 	for (auto it = coefs.begin(); it != coefs.end(); ++it) {
 		cout << (*it).first << " : " << toString((*it).second);
 	}
-	cout << endl;
+	cout << endl << endl;
 }
 
 void mnkMonths(int n, int decs, vector< vector< vector<point> > > data, vector< vector<point> > real) {
@@ -264,7 +267,7 @@ void mnkMonths(int n, int decs, vector< vector< vector<point> > > data, vector< 
 	cout << "MNK M L1 table" << tablel1.str();
 	cout << endl;
 	cout << "MNK M L2 table" << tablel2.str();
-	cout << endl;
+	cout << endl << endl;
 }
 
 int main() {
