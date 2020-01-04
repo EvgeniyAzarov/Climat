@@ -1,0 +1,17 @@
+Add custom coefficients for years
+# Пожалуйста, введите сообщение коммита для ваших изменений. Строки,
+# начинающиеся с «#» будут проигнорированы, а пустое сообщение
+# отменяет процесс коммита.
+#
+# На ветке master
+# Ваша ветка обновлена в соответствии с «origin/master».
+#
+# Изменения, которые будут включены в коммит:
+#	изменено:      .vscode/settings.json
+#	переименовано: Result files/New/result.txt -> Result files/New/result_decades.txt
+#	новый файл:    Result files/New/result_years.txt
+#	переименовано: main.cpp -> climat_decades.cpp
+#	переименовано: main_old.cpp -> climat_old.cpp
+#	новый файл:    climat_years
+#	переименовано: main_demo.cpp -> climat_years.cpp
+#

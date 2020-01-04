@@ -1,0 +1,24 @@
+0000000000000000000000000000000000000000 3a28acfea9ad5016342d6bddf8e73cbc705044e2 Evgeniy <azarov.evg.ua@gmail.com> 1551982640 +0200	commit (initial): Init commit
+3a28acfea9ad5016342d6bddf8e73cbc705044e2 b4ed61f33255561f164be0d668cf72789c7d33ec Evgeniy <azarov.evg.ua@gmail.com> 1552148601 +0200	commit: Make the sum of the coefficients equal to one
+b4ed61f33255561f164be0d668cf72789c7d33ec c59f2a86595ecad6031cd8407fda8e69c010d928 Evgeniy <azarov.evg.ua@gmail.com> 1552207726 +0200	commit: Add generation test data for debug
+c59f2a86595ecad6031cd8407fda8e69c010d928 c28d35d4d2bb9c98ec930ec9475cfd57bc478919 Evgeniy <azarov.evg.ua@gmail.com> 1552314323 +0200	commit: Add mnk for each mounths
+c28d35d4d2bb9c98ec930ec9475cfd57bc478919 3e0d9044b629424b297dd4ee9d58548561331847 Evgeniy <azarov.evg.ua@gmail.com> 1552315472 +0200	commit (amend): Add mnk for each mounths
+3e0d9044b629424b297dd4ee9d58548561331847 df8246084af0e632e9cc2b5f3b1f20074bb5f564 Evgeniy <azarov.evg.ua@gmail.com> 1552315541 +0200	commit (amend): Add mnk for each mounths
+df8246084af0e632e9cc2b5f3b1f20074bb5f564 70afd6a7fde37c0ba1271cca90528f3789c70081 Evgeniy <azarov.evg.ua@gmail.com> 1552315586 +0200	commit (amend): Add mnk for each months
+70afd6a7fde37c0ba1271cca90528f3789c70081 996bc832867eb626ee67e0d7f8786ff697a4aa64 Evgeniy <azarov.evg.ua@gmail.com> 1552349938 +0200	commit: Fix bug: the same data for both period in mnk mon.
+996bc832867eb626ee67e0d7f8786ff697a4aa64 83a8aed6aa9c37a5b711b5c914b6a5bd7d382911 Evgeniy <azarov.evg.ua@gmail.com> 1552598167 +0200	commit: Add delta MNK prediction
+83a8aed6aa9c37a5b711b5c914b6a5bd7d382911 75db598d30b81a5a73cdccd58ac1f2eccd490e18 Evgeniy <azarov.evg.ua@gmail.com> 1552598327 +0200	commit: Update result files
+75db598d30b81a5a73cdccd58ac1f2eccd490e18 83a8aed6aa9c37a5b711b5c914b6a5bd7d382911 Evgeniy <azarov.evg.ua@gmail.com> 1552598421 +0200	reset: moving to HEAD^
+83a8aed6aa9c37a5b711b5c914b6a5bd7d382911 35ef692f79b6bce4146a57b7a332b12a00ca5e70 Evgeniy <azarov.evg.ua@gmail.com> 1552598528 +0200	commit (amend): Add delta MNK prediction
+35ef692f79b6bce4146a57b7a332b12a00ca5e70 ef6b3d2dbc3892311e902bacbf34f00654c862c4 Evgeniy <azarov.evg.ua@gmail.com> 1553380928 +0200	commit: Add MNK with free coefficient
+ef6b3d2dbc3892311e902bacbf34f00654c862c4 0bd764212b06bd7df7c45684e162b0f3d2245f0a Evgeniy <azarov.evg.ua@gmail.com> 1555601620 +0300	commit: Add delta mean prediction
+0bd764212b06bd7df7c45684e162b0f3d2245f0a 59639db1782e085c63bdb0e73261e7f24496c925 Evgeniy Azarov <azarov.evg.ua@gmail.com> 1570381013 +0300	commit: build configuration
+59639db1782e085c63bdb0e73261e7f24496c925 88662411e99cb193d1ee0e305b310832ae6cdeb1 Evgeniy Azarov <azarov.evg.ua@gmail.com> 1570401956 +0300	commit: Add delta mnk months
+88662411e99cb193d1ee0e305b310832ae6cdeb1 8e09f3050d3585ae0ed1f584f9b0c818852c573f Evgeniy Azarov <azarov.evg.ua@gmail.com> 1573518740 +0200	commit: Add rounding
+8e09f3050d3585ae0ed1f584f9b0c818852c573f 78ee5bc28bf14d02f2d6637e542f03248fdb3a83 Evgeniy Azarov <azarov.evg.ua@gmail.com> 1573576858 +0200	commit: Rename result folders
+78ee5bc28bf14d02f2d6637e542f03248fdb3a83 e87535ec92e179da6bd5415703b64892057d9c69 Evgeniy Azarov <azarov.evg.ua@gmail.com> 1574851008 +0200	commit: Add new data handling
+e87535ec92e179da6bd5415703b64892057d9c69 dac091191f5a6a00718f538dd5fe41c85e11660e Evgeniy Azarov <azarov.evg.ua@gmail.com> 1577366353 +0200	commit: Add mnk for new data
+dac091191f5a6a00718f538dd5fe41c85e11660e 5221876484b441a38d6b839e1e93f5acfb9c3290 Evgeniy Azarov <azarov.evg.ua@gmail.com> 1577387990 +0200	commit: Add mnk months on new data
+5221876484b441a38d6b839e1e93f5acfb9c3290 d4a56a1d9f54b7ff93c149402c734934f7c2cf39 Evgeniy Azarov <azarov.evg.ua@gmail.com> 1577578739 +0200	commit: Add month deviation
+d4a56a1d9f54b7ff93c149402c734934f7c2cf39 6c26a12a1cde24afce070c736b0020e9a95a079e Evgeniy Azarov <azarov.evg.ua@gmail.com> 1577932359 +0200	commit: Add shift mnk for all periods
+6c26a12a1cde24afce070c736b0020e9a95a079e 9fa1624e885139339fed48fab46e465a8c6435b3 Evgeniy Azarov <azarov.evg.ua@gmail.com> 1577978931 +0200	commit: Add custom coefficie
