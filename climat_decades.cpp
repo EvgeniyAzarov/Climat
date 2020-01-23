@@ -4,7 +4,7 @@
 
 #include "LinearModel.h"
 
-const string pathData = "Data/NewData/years/";
+const string pathData = "Data/NewData/max/years/";
 
 string toString(vector<double> a) {
     stringstream sout;
@@ -276,7 +276,7 @@ int main() {
     int years = 40;
     int size;
     
-	cout << "Loading data.";
+	cout << "Loading data." << flush;
 
     ifstream fin(pathData + "temp1971-2010.csv");
     fin >> years >> n >> size;
@@ -286,7 +286,7 @@ int main() {
     vector< vector<point> > real(years, vector<point>(size));
 
     for (int i = 0; i < years; i++) {
-		cout << ".";
+		cout << "." << flush;
         for (int j = 0; j < size; j++) {
             for (int f = 0; f < n; f++) {
                 fin >> data[i][j][f].t >> sep
@@ -298,7 +298,7 @@ int main() {
     }
 
     for (int i = 0; i < years; i++) {
-		cout << ".";
+		cout << "." << flush;
         for (int j = 0; j < real[0].size(); j++) {
             fin >> real[i][j].t >> sep
                 >> real[i][j].x >> sep
