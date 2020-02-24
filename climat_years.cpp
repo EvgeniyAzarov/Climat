@@ -1,10 +1,11 @@
 #include <map>
 #include <string>
 #include <iomanip>
+#include <numeric>
 
 #include "LinearModel.h"
 
-const string pathData = "Data/NewData/years/";
+const string pathData = "Data/NewData/mean/years/";
 
 string toString(vector<double> a) {
     stringstream sout;
@@ -92,7 +93,8 @@ void printMatrix(vector< vector<point> > X) {
     cout << endl;
 }
 
-void shift(int n, int years, vector< vector< vector<point> > > data, vector< vector<point> > real) {
+void shift(int n, int years, vector< vector< vector<point> > > data, vector< vector<point> > real,
+															vector<double> coef = vector<double>(0)) {
 	// Мнк по разницам, строим коэффицинты на двух пердыдущих годах,
     // поэтому начинаем с третьего года
     for (int i = 2; i < years; i++) {
@@ -116,7 +118,11 @@ void shift(int n, int years, vector< vector< vector<point> > > data, vector< vec
     	// cout << "shift_real: " << toString(shift_real) << endl;
 
     	LinearModel lm;
-    	lm.fit(shift, shift_real);
+		if (inner_product(coef.begin(), coef.end(), coef.begin(), 0) == 0) {
+			lm.fit(shift, shift_real);
+		} else {
+			lm.coef = coef;
+		}
 
     	vector<point> pred = lm.predict(shift_next);
     	for (int j = 0; j < pred.size(); j++) {
@@ -144,7 +150,7 @@ int main() {
     int years = 40;
     int size;
     
-	cout << "Loading data.";
+	cout << "Loading data." << flush;
 
     ifstream fin(pathData + "temp1971-2010.csv");
     fin >> years >> n >> size;
@@ -154,7 +160,7 @@ int main() {
     vector< vector<point> > real(years, vector<point>(size));
 
     for (int i = 0; i < years; i++) {
-		cout << ".";
+		cout << "." << flush;
         for (int j = 0; j < size; j++) {
             for (int f = 0; f < n; f++) {
                 fin >> data[i][j][f].t >> sep
@@ -166,7 +172,7 @@ int main() {
     }
 
     for (int i = 0; i < years; i++) {
-		cout << ".";
+		cout << "." << flush;
         for (int j = 0; j < real[0].size(); j++) {
             fin >> real[i][j].t >> sep
                 >> real[i][j].x >> sep
@@ -280,4 +286,8 @@ int main() {
 		cout << i + 1971 << " " << deviation(lm.predict(data[i]), real[i])[0] << endl;
 	}
 	cout << endl;
+
+	cout << endl << endl << "Shift1 decades coefs: " << endl;
+	shift(n, years, data, real, 
+		vector<double>({0.46, -0.53, -0.01, -0.24, 0.33, -0.29, 0.19, 0.06, 0.22, 0.26, -0.36, 0.10, -0.08 }));
 }

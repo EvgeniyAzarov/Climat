@@ -9,7 +9,7 @@
 
 using namespace std;
 
-const string pathData = "Data/NewData/max/years/";
+const string pathData = "Data/NewData/mean/years/";
 
 vector< vector<point> > transpose(vector< vector<point> > a) {
     vector< vector<point> > res(a[0].size(), vector<point>(a.size()));

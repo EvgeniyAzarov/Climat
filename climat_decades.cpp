@@ -4,7 +4,7 @@
 
 #include "LinearModel.h"
 
-const string pathData = "Data/NewData/max/years/";
+const string pathData = "Data/NewData/mean/years/";
 
 string toString(vector<double> a) {
     stringstream sout;
